@@ -1,0 +1,113 @@
+===========================================
+🌐 NETLIFY ENVIRONMENT VARIABLES FOR ALTROWAY
+===========================================
+
+Copy and paste these variables into your Netlify dashboard:
+Site Settings > Environment Variables > Add Variable
+
+===========================================
+🔑 SUPABASE CONFIGURATION (REQUIRED)
+===========================================
+
+NEXT_PUBLIC_SUPABASE_URL
+Description: Your Supabase project URL
+Example: https://yourproject.supabase.co
+Value: [Get this from your Supabase dashboard]
+
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+Description: Your Supabase anonymous/public key
+Example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Value: [Get this from your Supabase dashboard]
+
+SUPABASE_SERVICE_ROLE_KEY
+Description: Your Supabase service role key (for server-side operations)
+Example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Value: [Get this from your Supabase dashboard]
+
+===========================================
+🔐 NEXT.JS AUTHENTICATION (REQUIRED)
+===========================================
+
+NEXTAUTH_URL
+Description: Your Netlify site URL
+Example: https://your-site-name.netlify.app
+Value: [Your actual Netlify URL]
+
+NEXTAUTH_SECRET
+Description: Secret key for NextAuth.js
+Example: your-super-secret-key-here
+Value: [Generate a random string]
+
+===========================================
+🗄️ DATABASE CONFIGURATION (OPTIONAL)
+===========================================
+
+DATABASE_URL
+Description: Direct database connection string
+Example: postgresql://username:password@host:port/database
+Value: [Your database connection string if needed]
+
+===========================================
+📱 ADDITIONAL CONFIGURATION (OPTIONAL)
+===========================================
+
+NODE_ENV
+Description: Environment setting
+Value: production
+
+NEXT_PUBLIC_SITE_URL
+Description: Your site's public URL
+Value: [Your Netlify URL]
+
+===========================================
+🔍 WHERE TO FIND SUPABASE KEYS
+===========================================
+
+1. Go to https://supabase.com/dashboard
+2. Select your project
+3. Go to Settings > API
+4. Copy the following:
+   - Project URL → NEXT_PUBLIC_SUPABASE_URL
+   - anon/public key → NEXT_PUBLIC_SUPABASE_ANON_KEY
+   - service_role key → SUPABASE_SERVICE_ROLE_KEY
+
+===========================================
+⚙️ NETLIFY SETUP STEPS
+===========================================
+
+1. Go to your Netlify dashboard
+2. Select your site
+3. Go to Site Settings > Environment Variables
+4. Click "Add Variable"
+5. Add each variable above with its corresponding value
+6. Make sure to click "Save" after adding each variable
+
+===========================================
+✅ VERIFICATION CHECKLIST
+===========================================
+
+After adding all variables, verify:
+- [ ] All variables are saved
+- [ ] No typos in variable names
+- [ ] Values are correct
+- [ ] Variables are set for all environments (Production, Deploy Preview, Branch Deploy)
+
+===========================================
+🚨 IMPORTANT NOTES
+===========================================
+
+⚠️ NEVER commit .env.local to git
+⚠️ Keep your service role key secret
+⚠️ Use HTTPS URLs for production
+⚠️ Test locally before deploying
+
+===========================================
+📞 NEED HELP?
+===========================================
+
+- Check Netlify build logs
+- Verify environment variables are set
+- Test locally with npm run build
+- Check Supabase dashboard for correct keys
+
+===========================================

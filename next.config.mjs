@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -12,6 +11,8 @@ const nextConfig = {
   },
   // Netlify deployment settings
   trailingSlash: true,
+  // Enable server-side rendering
+  serverExternalPackages: ['@supabase/ssr']
 }
 
 export default nextConfig

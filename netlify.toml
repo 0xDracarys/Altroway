@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = "out"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "18"
@@ -47,4 +47,22 @@
 [[redirects]]
   from = "/auth/*"
   to = "/auth/:splat"
+  status = 200
+
+# Next.js serverless functions
+[[redirects]]
+  from = "/_next/static/*"
+  to = "/_next/static/:splat"
+  status = 200
+
+# API routes for serverless functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/___netlify-handler"
+  status = 200
+
+# Catch-all for Next.js pages
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/___netlify-handler"
   status = 200
