@@ -26,26 +26,26 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const jobId = params.id;
+    const userId = params.id;
 
-    // Update job
+    // Update user profile
     const { data, error } = await supabase
-      .from("jobs")
+      .from("profiles")
       .update({
         ...body,
         updated_at: new Date().toISOString()
       })
-      .eq("id", jobId)
+      .eq("user_id", userId)
       .select();
 
     if (error) {
-      console.error("Error updating job:", error);
-      return NextResponse.json({ error: "Failed to update job" }, { status: 500 });
+      console.error("Error updating user:", error);
+      return NextResponse.json({ error: "Failed to update user" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error("Error in job update API:", error);
+    console.error("Error in user update API:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -74,42 +74,62 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const jobId = params.id;
+    const userId = params.id;
 
-    // Delete job applications first
+    // Delete user profile and related data
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .delete()
+      .eq("user_id", userId);
+
+    if (profileError) {
+      console.error("Error deleting user profile:", profileError);
+      return NextResponse.json({ error: "Failed to delete user" }, { status: 500 });
+    }
+
+    // Delete user's jobs
+    const { error: jobsError } = await supabase
+      .from("jobs")
+      .delete()
+      .eq("employer_id", userId);
+
+    if (jobsError) {
+      console.error("Error deleting user jobs:", jobsError);
+    }
+
+    // Delete user's job applications
     const { error: applicationsError } = await supabase
       .from("job_applications")
       .delete()
-      .eq("job_id", jobId);
+      .eq("user_id", userId);
 
     if (applicationsError) {
-      console.error("Error deleting job applications:", applicationsError);
+      console.error("Error deleting user applications:", applicationsError);
     }
 
-    // Delete saved jobs
+    // Delete user's saved jobs
     const { error: savedJobsError } = await supabase
       .from("saved_jobs")
       .delete()
-      .eq("job_id", jobId);
+      .eq("user_id", userId);
 
     if (savedJobsError) {
-      console.error("Error deleting saved jobs:", savedJobsError);
+      console.error("Error deleting user saved jobs:", savedJobsError);
     }
 
-    // Delete the job
-    const { error: jobError } = await supabase
-      .from("jobs")
+    // Delete user's analytics events
+    const { error: analyticsError } = await supabase
+      .from("analytics_events")
       .delete()
-      .eq("id", jobId);
+      .eq("user_id", userId);
 
-    if (jobError) {
-      console.error("Error deleting job:", jobError);
-      return NextResponse.json({ error: "Failed to delete job" }, { status: 500 });
+    if (analyticsError) {
+      console.error("Error deleting user analytics:", analyticsError);
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error in job delete API:", error);
+    console.error("Error in user delete API:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

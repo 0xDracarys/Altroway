@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, ArrowLeft, Shield, Mail, Calendar, CheckCircle, XCircle } from "lucide-react";
+import { Users, ArrowLeft, Shield, Mail, Calendar, CheckCircle, XCircle, Edit, Trash2, UserPlus, Ban, Unlock } from "lucide-react";
 import Link from "next/link";
+import { UserManagementActions } from "./user-management-actions";
 
 export default async function AdminUsersPage() {
   const supabase = await createClient();
@@ -193,14 +194,7 @@ export default async function AdminUsersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline">
-                          Edit
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          View
-                        </Button>
-                      </div>
+                      <UserManagementActions user={user} />
                     </TableCell>
                   </TableRow>
                 ))}
