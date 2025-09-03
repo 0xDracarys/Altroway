@@ -1,13 +1,13 @@
 [build]
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
-# Next.js plugin configuration
-[[plugins]]
-  package = "@netlify/plugin-nextjs@5.13.0"
+# Next.js plugin configuration (disabled due to ES module conflicts)
+# [[plugins]]
+#   package = "@netlify/plugin-nextjs"
 
 # Handle Next.js static files
 [[redirects]]
@@ -18,25 +18,25 @@
 # Handle Next.js image optimization
 [[redirects]]
   from = "/_next/image*"
-  to = "/.netlify/functions/___netlify-handler"
+  to = "/_next/image/:splat"
   status = 200
 
-# Handle API routes
+# Handle API routes - redirect to static files if they exist
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/___netlify-handler"
+  to = "/api/:splat"
   status = 200
 
 # Handle authentication routes
 [[redirects]]
   from = "/auth/*"
-  to = "/.netlify/functions/___netlify-handler"
+  to = "/auth/:splat"
   status = 200
 
 # Handle all other routes (SPA fallback)
 [[redirects]]
   from = "/*"
-  to = "/.netlify/functions/___netlify-handler"
+  to = "/index.html"
   status = 200
 
 # Security headers
