@@ -11,13 +11,8 @@ const nextConfig = {
   },
   // Netlify deployment settings
   trailingSlash: true,
-  // Static export for Netlify (without serverless functions)
-  output: 'export',
-  distDir: 'out',
-  // Disable server-side features for static export
-  experimental: {
-    esmExternals: false
-  }
+  // Enable server-side rendering
+  serverExternalPackages: ['@supabase/ssr']
 }
 
 export default nextConfig

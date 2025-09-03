@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { MessageCircle, X, Send } from "lucide-react"
+import { MessageCircle, X, Send, Construction } from "lucide-react"
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false)
@@ -98,6 +98,17 @@ export function Chatbot() {
             <CardHeader className="border-b">
               <CardTitle>AI Assistant</CardTitle>
               <CardDescription>Ask me anything about moving to Europe!</CardDescription>
+              
+              {/* Construction Banner */}
+              <div className="mt-3 p-2 bg-gradient-to-r from-yellow-100 to-orange-100 border border-yellow-200 rounded-lg">
+                <div className="flex items-center gap-2 text-yellow-800">
+                  <Construction className="h-3 w-3" />
+                  <span className="text-xs font-medium">Coming Soon</span>
+                </div>
+                <p className="text-xs text-yellow-700 mt-1">
+                  AI Assistant is currently under development
+                </p>
+              </div>
             </CardHeader>
             <CardContent className="flex-grow overflow-y-auto p-4">
               <div className="space-y-4">
