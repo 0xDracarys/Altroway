@@ -7,7 +7,7 @@
 
 # Next.js plugin configuration
 [[plugins]]
-  package = "@netlify/plugin-nextjs"
+  package = "@netlify/plugin-nextjs@5.13.0"
 
 # Handle Next.js static files
 [[redirects]]
