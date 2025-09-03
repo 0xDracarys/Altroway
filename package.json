@@ -1,13 +1,17 @@
 {
-  "name": "my-v0-project",
-  "version": "0.1.0",
+  "name": "altroway-job-platform",
+  "version": "1.0.0",
+  "description": "A modern, full-stack job platform built with Next.js, Supabase, and TypeScript",
   "private": true,
   "scripts": {
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "export": "next build && next export"
+    "export": "next build && next export",
+    "type-check": "tsc --noEmit",
+    "build:netlify": "npm run build",
+    "deploy:preview": "npm run build && npm run type-check"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
