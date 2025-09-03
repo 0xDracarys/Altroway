@@ -161,7 +161,7 @@ export default async function AdminUsersPage() {
                     <TableCell>
                       <div>
                         <p className="font-medium">{user.full_name || 'N/A'}</p>
-                        <p className="text-sm text-gray-600">{user.email}</p>
+                        <p className="text-sm text-gray-600">{user.username || 'No username'}</p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -185,7 +185,7 @@ export default async function AdminUsersPage() {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>{user.company || 'N/A'}</TableCell>
+                    <TableCell>{user.headline || 'N/A'}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-gray-400" />

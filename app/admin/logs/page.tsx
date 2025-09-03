@@ -34,7 +34,7 @@ export default async function AdminLogsPage() {
       *,
       profiles:user_id (
         full_name,
-        email,
+        username,
         role
       )
     `)
@@ -159,17 +159,17 @@ export default async function AdminLogsPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {event.profiles ? (
-                        <div>
-                          <p className="font-medium">{event.profiles.full_name || 'Unknown'}</p>
-                          <p className="text-sm text-gray-600">{event.profiles.email}</p>
-                          <Badge variant="outline" className="text-xs">
-                            {event.profiles.role}
-                          </Badge>
-                        </div>
-                      ) : (
-                        <span className="text-gray-500">Anonymous</span>
-                      )}
+                                             {event.profiles ? (
+                         <div>
+                           <p className="font-medium">{event.profiles.full_name || 'Unknown'}</p>
+                           <p className="text-sm text-gray-600">{event.profiles.username || 'No username'}</p>
+                           <Badge variant="outline" className="text-xs">
+                             {event.profiles.role}
+                           </Badge>
+                         </div>
+                       ) : (
+                         <span className="text-gray-500">Anonymous</span>
+                       )}
                     </TableCell>
                     <TableCell>
                       <Badge variant={
