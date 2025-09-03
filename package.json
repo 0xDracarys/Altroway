@@ -49,6 +49,7 @@
     "clsx": "^2.1.1",
     "cmdk": "latest",
     "date-fns": "4.1.0",
+    "dotenv": "^17.2.2",
     "embla-carousel-react": "latest",
     "groq-sdk": "^0.30.0",
     "input-otp": "latest",
