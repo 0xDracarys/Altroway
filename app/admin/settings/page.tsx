@@ -3,9 +3,10 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Settings, Shield, Globe, Mail, Database, Bell, Users, Lock, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Settings, Shield, Globe, Mail, Database, Bell, Users, Lock, AlertTriangle, Gauge } from "lucide-react";
 import Link from "next/link";
 import { PlatformSettings } from "./platform-settings";
+import { ProjectStatsSettings } from "./project-stats";
 
 export default async function AdminSettingsPage() {
   const supabase = await createClient();
@@ -198,6 +199,22 @@ export default async function AdminSettingsPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Project Stats Settings */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Gauge className="h-5 w-5" />
+              Project Statistics
+            </CardTitle>
+            <CardDescription>
+              Update project completion percentage, phase, and version in real-time
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ProjectStatsSettings />
+          </CardContent>
+        </Card>
 
         {/* Advanced Settings */}
         <Card>

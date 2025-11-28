@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -48,6 +51,35 @@ import {
 import Link from "next/link";
 
 export default function DocumentationPage() {
+  const [stats, setStats] = useState({
+    phase: 'Final Enhancement',
+    completion: '99',
+    version: 'v1.3.0'
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchStats();
+    // Polling for real-time updates every 10 seconds
+    const interval = setInterval(fetchStats, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('/api/settings');
+      const data = await response.json();
+      setStats({
+        phase: data.phase_name || 'Final Enhancement',
+        completion: data.completion_percentage || '99',
+        version: data.version || 'v1.3.0'
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <div className="container mx-auto px-4 py-12">
@@ -81,14 +113,14 @@ export default function DocumentationPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className="text-3xl font-bold mb-2">Phase 2</div>
-                  <div className="text-blue-100">Final Enhancement</div>
+                  <div className="text-blue-100">{stats.phase}</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">99%</div>
+                  <div className="text-3xl font-bold mb-2">{stats.completion}%</div>
                   <div className="text-blue-100">Completion</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">v1.3.0</div>
+                  <div className="text-3xl font-bold mb-2">{stats.version}</div>
                   <div className="text-blue-100">Production Ready</div>
                 </div>
               </div>
