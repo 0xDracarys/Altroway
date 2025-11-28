@@ -8,6 +8,12 @@ const SUPPORTED_LANGUAGES: Record<Language, string> = {
   en: 'en',
   lt: 'lt',
   ru: 'ru',
+  de: 'de',
+  fr: 'fr',
+  es: 'es',
+  it: 'it',
+  pt: 'pt',
+  pl: 'pl',
 };
 
 /**
@@ -79,6 +85,12 @@ export async function detectLanguage(text: string): Promise<Language | null> {
       const detected = data.responseData.detectedLanguage;
       if (detected === 'lt') return 'lt';
       if (detected === 'ru') return 'ru';
+      if (detected === 'de') return 'de';
+      if (detected === 'fr') return 'fr';
+      if (detected === 'es') return 'es';
+      if (detected === 'it') return 'it';
+      if (detected === 'pt') return 'pt';
+      if (detected === 'pl') return 'pl';
       return 'en';
     }
 
@@ -93,7 +105,7 @@ export async function detectLanguage(text: string): Promise<Language | null> {
  * Get supported languages
  */
 export function getSupportedLanguages(): Language[] {
-  return ['en', 'lt', 'ru'];
+  return ['en', 'lt', 'ru', 'de', 'fr', 'es', 'it', 'pt', 'pl'];
 }
 
 /**
@@ -104,6 +116,12 @@ export function getLanguageName(language: Language): string {
     en: 'English',
     lt: 'Lietuvių',
     ru: 'Русский',
+    de: 'Deutsch',
+    fr: 'Français',
+    es: 'Español',
+    it: 'Italiano',
+    pt: 'Português',
+    pl: 'Polski',
   };
   return names[language] || language;
 }
@@ -112,5 +130,6 @@ export function getLanguageName(language: Language): string {
  * Check if language is supported
  */
 export function isLanguageSupported(language: string): boolean {
-  return ['en', 'lt', 'ru'].includes(language);
+  return ['en', 'lt', 'ru', 'de', 'fr', 'es', 'it', 'pt', 'pl'].includes(language);
 }
+
