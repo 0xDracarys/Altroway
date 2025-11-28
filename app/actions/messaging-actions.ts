@@ -8,7 +8,7 @@ interface Conversation {
   created_at: string;
   updated_at: string;
   job_application_id: string;
-  job_applications: {
+  job_applications: Array<{
     id: string;
     status: string;
     applied_at: string;
@@ -18,12 +18,12 @@ interface Conversation {
       title: string;
       company: string;
       employer_id: string;
-    };
+    }[];
     profiles?: {
       full_name: string;
       avatar_url: string;
-    };
-  };
+    }[];
+  }>;
   messages: Array<{
     id: string;
     content: string;
@@ -248,9 +248,16 @@ export async function getConversation(conversationId: string) {
   }
 
   // Check authorization
-  const application = conversationCheck.job_applications;
-  const isAuthorized = user.id === application.applicant_id || 
-                      user.id === application.jobs.employer_id;
+  const applications = conversationCheck.job_applications;
+  const application = applications?.[0];
+  
+  let isAuthorized = false;
+  if (application) {
+    const jobsArray = Array.isArray(application.jobs) ? application.jobs : [application.jobs];
+    const job = jobsArray?.[0];
+    isAuthorized = user.id === application.applicant_id || 
+                   (job && user.id === job.employer_id);
+  }
 
   // For super admins, allow access to all conversations
   const { data: profile } = await supabase
@@ -325,6 +332,11 @@ export async function sendMessage(conversationId: string, content: string) {
       return { success: false, error: "Message content is required" };
     }
 
+    // Validate message length
+    if (content.trim().length > 2000) {
+      return { success: false, error: "Message is too long (maximum 2000 characters)" };
+    }
+
     // Check if user is authorized to send messages in this conversation
     const { data: conversationCheck } = await supabase
       .from("conversations")
@@ -345,9 +357,16 @@ export async function sendMessage(conversationId: string, content: string) {
     }
 
     // Check authorization
-    const application = conversationCheck.job_applications;
-    const isAuthorized = user.id === application.applicant_id || 
-                        user.id === application.jobs.employer_id;
+    const applications = conversationCheck.job_applications;
+    const application = applications?.[0];
+    
+    let isAuthorized = false;
+    if (application) {
+      const jobsArray = Array.isArray(application.jobs) ? application.jobs : [application.jobs];
+      const job = jobsArray?.[0];
+      isAuthorized = user.id === application.applicant_id || 
+                     (job && user.id === job.employer_id);
+    }
 
     // For super admins, allow sending messages in all conversations
     const { data: profile } = await supabase
@@ -358,6 +377,20 @@ export async function sendMessage(conversationId: string, content: string) {
 
     if (!isAuthorized && profile?.role !== "super_admin") {
       return { success: false, error: "Access denied" };
+    }
+
+    // Check for duplicate messages (same content, same sender, within 5 seconds)
+    const { data: recentMessages } = await supabase
+      .from("messages")
+      .select("id, created_at")
+      .eq("conversation_id", conversationId)
+      .eq("sender_id", user.id)
+      .eq("content", content.trim())
+      .gte("created_at", new Date(Date.now() - 5000).toISOString())
+      .limit(1);
+
+    if (recentMessages && recentMessages.length > 0) {
+      return { success: false, error: "This message was just sent. Please avoid sending duplicate messages." };
     }
 
     // Insert the message
@@ -378,10 +411,15 @@ export async function sendMessage(conversationId: string, content: string) {
     }
 
     // Update conversation's updated_at timestamp
-    await supabase
+    const { error: updateError } = await supabase
       .from("conversations")
       .update({ updated_at: new Date().toISOString() })
       .eq("id", conversationId);
+
+    if (updateError) {
+      console.error("Error updating conversation timestamp:", updateError);
+      // Don't fail the operation if timestamp update fails
+    }
 
     revalidatePath("/messages");
     revalidatePath(`/messages/${conversationId}`);
@@ -389,7 +427,7 @@ export async function sendMessage(conversationId: string, content: string) {
     return { success: true, data: message };
   } catch (error) {
     console.error("sendMessage error:", error);
-    return { success: false, error: "Failed to send message" };
+    return { success: false, error: error instanceof Error ? error.message : "Failed to send message" };
   }
 }
 
@@ -423,8 +461,10 @@ export async function createConversation(jobApplicationId: string) {
     }
 
     // Check authorization
+    const jobsArray = Array.isArray(application.jobs) ? application.jobs : [application.jobs];
+    const job = jobsArray?.[0];
     const isAuthorized = user.id === application.applicant_id || 
-                        user.id === application.jobs.employer_id;
+                        (job && user.id === job.employer_id);
 
     // For super admins, allow creating conversations for any application
     const { data: profile } = await supabase
@@ -503,9 +543,16 @@ export async function markMessagesAsRead(conversationId: string) {
     }
 
     // Check authorization
-    const application = conversationCheck.job_applications;
-    const isAuthorized = user.id === application.applicant_id || 
-                        user.id === application.jobs.employer_id;
+    const applications = conversationCheck.job_applications;
+    const application = applications?.[0];
+    
+    let isAuthorized = false;
+    if (application) {
+      const jobsArray = Array.isArray(application.jobs) ? application.jobs : [application.jobs];
+      const job = jobsArray?.[0];
+      isAuthorized = user.id === application.applicant_id || 
+                     (job && user.id === job.employer_id);
+    }
 
     // For super admins, allow marking messages as read in all conversations
     const { data: profile } = await supabase

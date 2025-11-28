@@ -36,33 +36,21 @@ export function PlatformSettings() {
     platformDescription: "A modern job platform for European opportunities",
     maintenanceMode: false,
     allowRegistration: true,
-    requireEmailVerification: true,
     
     // Security Settings
     passwordMinLength: 8,
-    requireSpecialChars: true,
     sessionTimeout: 24,
-    twoFactorAuth: false,
     maxLoginAttempts: 5,
     
     // Email Settings
-    welcomeEmails: true,
-    jobNotifications: true,
-    applicationUpdates: true,
-    marketingEmails: false,
     emailFrom: "noreply@altroway.com",
     
-    // Database Settings
-    backupFrequency: "daily",
-    dataRetention: 7,
-    autoCleanup: true,
-    
-    // Feature Flags
-    enableChat: true,
-    enableAnalytics: true,
-    enableJobRecommendations: true,
-    enableCompanyProfiles: true,
-    enableLegalServices: true
+    // Feature Flags (Only real features)
+    enableJobPosting: true,
+    enableUserProfiles: true,
+    enableJobApplications: true,
+    enableSavedJobs: true,
+    enableMessaging: true
   });
 
   const handleSaveSettings = async () => {
@@ -96,25 +84,15 @@ export function PlatformSettings() {
         platformDescription: "A modern job platform for European opportunities",
         maintenanceMode: false,
         allowRegistration: true,
-        requireEmailVerification: true,
         passwordMinLength: 8,
-        requireSpecialChars: true,
         sessionTimeout: 24,
-        twoFactorAuth: false,
         maxLoginAttempts: 5,
-        welcomeEmails: true,
-        jobNotifications: true,
-        applicationUpdates: true,
-        marketingEmails: false,
         emailFrom: "noreply@altroway.com",
-        backupFrequency: "daily",
-        dataRetention: 7,
-        autoCleanup: true,
-        enableChat: true,
-        enableAnalytics: true,
-        enableJobRecommendations: true,
-        enableCompanyProfiles: true,
-        enableLegalServices: true
+        enableJobPosting: true,
+        enableUserProfiles: true,
+        enableJobApplications: true,
+        enableSavedJobs: true,
+        enableMessaging: true
       });
       toast.success('Settings reset to defaults');
     }
@@ -191,223 +169,157 @@ export function PlatformSettings() {
         </CardContent>
       </Card>
 
-      {/* Security Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Security Configuration
-          </CardTitle>
-          <CardDescription>
-            Authentication and security policies
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="passwordMinLength">Password Min Length</Label>
-              <Input
-                id="passwordMinLength"
-                type="number"
-                min="6"
-                max="20"
-                value={settings.passwordMinLength}
-                onChange={(e) => setSettings({...settings, passwordMinLength: parseInt(e.target.value)})}
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="sessionTimeout">Session Timeout (hours)</Label>
-              <Input
-                id="sessionTimeout"
-                type="number"
-                min="1"
-                max="168"
-                value={settings.sessionTimeout}
-                onChange={(e) => setSettings({...settings, sessionTimeout: parseInt(e.target.value)})}
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="maxLoginAttempts">Max Login Attempts</Label>
-              <Input
-                id="maxLoginAttempts"
-                type="number"
-                min="3"
-                max="10"
-                value={settings.maxLoginAttempts}
-                onChange={(e) => setSettings({...settings, maxLoginAttempts: parseInt(e.target.value)})}
-              />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="requireSpecialChars">Require Special Characters</Label>
-                <p className="text-sm text-gray-600">Enforce complex passwords</p>
-              </div>
-              <Switch
-                id="requireSpecialChars"
-                checked={settings.requireSpecialChars}
-                onCheckedChange={(checked) => setSettings({...settings, requireSpecialChars: checked})}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="twoFactorAuth">Two-Factor Authentication</Label>
-                <p className="text-sm text-gray-600">Optional 2FA for users</p>
-              </div>
-              <Switch
-                id="twoFactorAuth"
-                checked={settings.twoFactorAuth}
-                onCheckedChange={(checked) => setSettings({...settings, twoFactorAuth: checked})}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+             {/* Security Settings */}
+       <Card>
+         <CardHeader>
+           <CardTitle className="flex items-center gap-2">
+             <Shield className="h-5 w-5" />
+             Security Configuration
+           </CardTitle>
+           <CardDescription>
+             Basic security settings
+           </CardDescription>
+         </CardHeader>
+         <CardContent className="space-y-4">
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+             <div>
+               <Label htmlFor="passwordMinLength">Password Min Length</Label>
+               <Input
+                 id="passwordMinLength"
+                 type="number"
+                 min="6"
+                 max="20"
+                 value={settings.passwordMinLength}
+                 onChange={(e) => setSettings({...settings, passwordMinLength: parseInt(e.target.value)})}
+               />
+             </div>
+             
+             <div>
+               <Label htmlFor="sessionTimeout">Session Timeout (hours)</Label>
+               <Input
+                 id="sessionTimeout"
+                 type="number"
+                 min="1"
+                 max="168"
+                 value={settings.sessionTimeout}
+                 onChange={(e) => setSettings({...settings, sessionTimeout: parseInt(e.target.value)})}
+               />
+             </div>
+             
+             <div>
+               <Label htmlFor="maxLoginAttempts">Max Login Attempts</Label>
+               <Input
+                 id="maxLoginAttempts"
+                 type="number"
+                 min="3"
+                 max="10"
+                 value={settings.maxLoginAttempts}
+                 onChange={(e) => setSettings({...settings, maxLoginAttempts: parseInt(e.target.value)})}
+               />
+             </div>
+           </div>
+         </CardContent>
+       </Card>
 
-      {/* Email Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            Email Notifications
-          </CardTitle>
-          <CardDescription>
-            Configure email notifications and templates
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="welcomeEmails">Welcome Emails</Label>
-                <p className="text-sm text-gray-600">Send to new users</p>
-              </div>
-              <Switch
-                id="welcomeEmails"
-                checked={settings.welcomeEmails}
-                onCheckedChange={(checked) => setSettings({...settings, welcomeEmails: checked})}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="jobNotifications">Job Notifications</Label>
-                <p className="text-sm text-gray-600">New job alerts</p>
-              </div>
-              <Switch
-                id="jobNotifications"
-                checked={settings.jobNotifications}
-                onCheckedChange={(checked) => setSettings({...settings, jobNotifications: checked})}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="applicationUpdates">Application Updates</Label>
-                <p className="text-sm text-gray-600">Status change notifications</p>
-              </div>
-              <Switch
-                id="applicationUpdates"
-                checked={settings.applicationUpdates}
-                onCheckedChange={(checked) => setSettings({...settings, applicationUpdates: checked})}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="marketingEmails">Marketing Emails</Label>
-                <p className="text-sm text-gray-600">Promotional content</p>
-              </div>
-              <Switch
-                id="marketingEmails"
-                checked={settings.marketingEmails}
-                onCheckedChange={(checked) => setSettings({...settings, marketingEmails: checked})}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+             {/* Email Settings */}
+       <Card>
+         <CardHeader>
+           <CardTitle className="flex items-center gap-2">
+             <Mail className="h-5 w-5" />
+             Email Configuration
+           </CardTitle>
+           <CardDescription>
+             Basic email settings
+           </CardDescription>
+         </CardHeader>
+         <CardContent className="space-y-4">
+           <div>
+             <Label htmlFor="emailFrom">Email From Address</Label>
+             <Input
+               id="emailFrom"
+               value={settings.emailFrom}
+               onChange={(e) => setSettings({...settings, emailFrom: e.target.value})}
+               placeholder="noreply@altroway.com"
+             />
+           </div>
+         </CardContent>
+       </Card>
 
-      {/* Feature Flags */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
-            Feature Flags
-          </CardTitle>
-          <CardDescription>
-            Enable or disable platform features
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="enableChat">Chat System</Label>
-                <p className="text-sm text-gray-600">User messaging</p>
-              </div>
-              <Switch
-                id="enableChat"
-                checked={settings.enableChat}
-                onCheckedChange={(checked) => setSettings({...settings, enableChat: checked})}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="enableAnalytics">Analytics</Label>
-                <p className="text-sm text-gray-600">User behavior tracking</p>
-              </div>
-              <Switch
-                id="enableAnalytics"
-                checked={settings.enableAnalytics}
-                onCheckedChange={(checked) => setSettings({...settings, enableAnalytics: checked})}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="enableJobRecommendations">Job Recommendations</Label>
-                <p className="text-sm text-gray-600">AI-powered suggestions</p>
-              </div>
-              <Switch
-                id="enableJobRecommendations"
-                checked={settings.enableJobRecommendations}
-                onCheckedChange={(checked) => setSettings({...settings, enableJobRecommendations: checked})}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="enableCompanyProfiles">Company Profiles</Label>
-                <p className="text-sm text-gray-600">Employer profiles</p>
-              </div>
-              <Switch
-                id="enableCompanyProfiles"
-                checked={settings.enableCompanyProfiles}
-                onCheckedChange={(checked) => setSettings({...settings, enableCompanyProfiles: checked})}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="enableLegalServices">Legal Services</Label>
-                <p className="text-sm text-gray-600">Legal advisor features</p>
-              </div>
-              <Switch
-                id="enableLegalServices"
-                checked={settings.enableLegalServices}
-                onCheckedChange={(checked) => setSettings({...settings, enableLegalServices: checked})}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+             {/* Feature Flags */}
+       <Card>
+         <CardHeader>
+           <CardTitle className="flex items-center gap-2">
+             <Bell className="h-5 w-5" />
+             Platform Features
+           </CardTitle>
+           <CardDescription>
+             Enable or disable platform features (only real features)
+           </CardDescription>
+         </CardHeader>
+         <CardContent className="space-y-4">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div className="flex items-center justify-between">
+               <div>
+                 <Label htmlFor="enableJobPosting">Job Posting</Label>
+                 <p className="text-sm text-gray-600">Allow employers to post jobs</p>
+               </div>
+               <Switch
+                 id="enableJobPosting"
+                 checked={settings.enableJobPosting}
+                 onCheckedChange={(checked) => setSettings({...settings, enableJobPosting: checked})}
+               />
+             </div>
+             
+             <div className="flex items-center justify-between">
+               <div>
+                 <Label htmlFor="enableUserProfiles">User Profiles</Label>
+                 <p className="text-sm text-gray-600">User profile management</p>
+               </div>
+               <Switch
+                 id="enableUserProfiles"
+                 checked={settings.enableUserProfiles}
+                 onCheckedChange={(checked) => setSettings({...settings, enableUserProfiles: checked})}
+               />
+             </div>
+             
+             <div className="flex items-center justify-between">
+               <div>
+                 <Label htmlFor="enableJobApplications">Job Applications</Label>
+                 <p className="text-sm text-gray-600">Job application system</p>
+               </div>
+               <Switch
+                 id="enableJobApplications"
+                 checked={settings.enableJobApplications}
+                 onCheckedChange={(checked) => setSettings({...settings, enableJobApplications: checked})}
+               />
+             </div>
+             
+             <div className="flex items-center justify-between">
+               <div>
+                 <Label htmlFor="enableSavedJobs">Saved Jobs</Label>
+                 <p className="text-sm text-gray-600">Job seekers can save jobs</p>
+               </div>
+               <Switch
+                 id="enableSavedJobs"
+                 checked={settings.enableSavedJobs}
+                 onCheckedChange={(checked) => setSettings({...settings, enableSavedJobs: checked})}
+               />
+             </div>
+             
+             <div className="flex items-center justify-between">
+               <div>
+                 <Label htmlFor="enableMessaging">Messaging</Label>
+                 <p className="text-sm text-gray-600">User messaging system</p>
+               </div>
+               <Switch
+                 id="enableMessaging"
+                 checked={settings.enableMessaging}
+                 onCheckedChange={(checked) => setSettings({...settings, enableMessaging: checked})}
+               />
+             </div>
+           </div>
+         </CardContent>
+       </Card>
 
       {/* Action Buttons */}
       <div className="flex justify-between items-center pt-6 border-t">

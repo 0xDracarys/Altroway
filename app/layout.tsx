@@ -1,15 +1,13 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
+import { I18nProvider } from "@/lib/i18n/provider"
+import { HeaderWrapper } from "@/components/header-wrapper"
 import { Chatbot } from "@/components/chatbot/chatbot"
 import { Toaster } from "@/components/ui/sonner"
-import { Header } from "@/components/header"
 import { MessageNotification } from "@/components/message-notification"
 import { createClient } from "@/lib/supabase/server"
 import "./globals.css"
-
-const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Altroway - Your Gateway to Europe",
@@ -29,14 +27,16 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <Header user={user} />
-          {children}
-          <Chatbot />
-          <Toaster />
-          <MessageNotification />
-        </ThemeProvider>
+      <body className="font-sans">
+        <I18nProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+            <HeaderWrapper user={user} />
+            {children}
+            <Chatbot />
+            <Toaster />
+            <MessageNotification />
+          </ThemeProvider>
+        </I18nProvider>
       </body>
     </html>
   )

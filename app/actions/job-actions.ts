@@ -57,8 +57,36 @@ export async function createJob(prevState: any, formData: FormData) {
     const title = formData.get("title") as string;
     const company = formData.get("company") as string;
     const location = formData.get("location") as string;
-    const salary_min = formData.get("salary_min") ? parseInt(formData.get("salary_min") as string) : undefined;
-    const salary_max = formData.get("salary_max") ? parseInt(formData.get("salary_max") as string) : undefined;
+    
+    // Safe number parsing with error handling
+    let salary_min: number | undefined;
+    let salary_max: number | undefined;
+    
+    try {
+      const salaryMinStr = formData.get("salary_min") as string;
+      if (salaryMinStr && salaryMinStr.trim()) {
+        salary_min = parseInt(salaryMinStr, 10);
+        if (isNaN(salary_min)) salary_min = undefined;
+      }
+    } catch (e) {
+      salary_min = undefined;
+    }
+    
+    try {
+      const salaryMaxStr = formData.get("salary_max") as string;
+      if (salaryMaxStr && salaryMaxStr.trim()) {
+        salary_max = parseInt(salaryMaxStr, 10);
+        if (isNaN(salary_max)) salary_max = undefined;
+      }
+    } catch (e) {
+      salary_max = undefined;
+    }
+
+    // Validate salary range if both provided
+    if (salary_min && salary_max && salary_min > salary_max) {
+      return { message: "Minimum salary cannot be greater than maximum salary", status: "error" };
+    }
+
     const description = formData.get("description") as string;
     const requirements = formData.get("requirements") as string;
     const benefits = formData.get("benefits") as string;
@@ -67,7 +95,7 @@ export async function createJob(prevState: any, formData: FormData) {
     const visa_sponsorship = formData.get("visa_sponsorship") === "on";
     const urgent = formData.get("urgent") === "on";
     const industry = formData.get("industry") as string;
-    const skills = formData.get("skills") ? (formData.get("skills") as string).split(",").map(s => s.trim()) : [];
+    const skills = formData.get("skills") ? (formData.get("skills") as string).split(",").map(s => s.trim()).filter(s => s) : [];
     const application_deadline = formData.get("application_deadline") as string;
     const application_deadline_clean = application_deadline && application_deadline.trim() !== "" ? application_deadline : undefined;
 
@@ -75,6 +103,23 @@ export async function createJob(prevState: any, formData: FormData) {
     console.log("Extracted form data:", {
       title, company, location, description, job_type, experience_level, application_deadline: application_deadline_clean
     });
+
+    // Check for duplicate job postings (same title, company, and location by same employer within 24 hours)
+    const { data: existingJobs } = await supabase
+      .from("jobs")
+      .select("id")
+      .eq("employer_id", user.id)
+      .eq("title", title)
+      .eq("company", company)
+      .eq("location", location)
+      .gt("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+    if (existingJobs && existingJobs.length > 0) {
+      return { 
+        message: "A similar job posting was created recently. Please wait before posting again or edit the existing listing.", 
+        status: "error" 
+      };
+    }
 
     const validatedFields = JobSchema.safeParse({
       title,
@@ -122,7 +167,7 @@ export async function createJob(prevState: any, formData: FormData) {
     return { message: "Job created successfully!", status: "success" };
   } catch (error) {
     console.error("createJob error:", error);
-    return { message: "Failed to process job creation", status: "error" };
+    return { message: error instanceof Error ? error.message : "Failed to process job creation", status: "error" };
   }
 }
 

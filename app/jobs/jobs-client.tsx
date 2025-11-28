@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Search, MapPin, Clock, Euro, Building, Zap, Bookmark, Heart } from "lucide-react";
 import Link from "next/link";
 import { saveJob, unsaveJob, checkIfJobSaved } from "@/app/actions/job-actions";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 type Job = {
   id: string;
@@ -140,7 +141,8 @@ export function JobsClient({ initialJobs }: JobsClientProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <ErrorBoundary section="Jobs">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
       {/* Filters Sidebar */}
       <div className="lg:col-span-1">
         <Card>
@@ -359,5 +361,6 @@ export function JobsClient({ initialJobs }: JobsClientProps) {
         </div>
       </div>
     </div>
+    </ErrorBoundary>
   );
 }

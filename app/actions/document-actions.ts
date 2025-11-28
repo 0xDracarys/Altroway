@@ -6,6 +6,7 @@ import { z } from "zod";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+const MAX_UPLOADS_PER_DAY = 20; // Rate limit: 20 uploads per day per user
 
 const UploadSchema = z.object({
   document: z
@@ -43,9 +44,49 @@ export async function uploadDocument(prevState: any, formData: FormData) {
   const { document: file } = validatedFields.data;
 
   try {
+    // Check rate limit: max uploads per day
+    const today = new Date().toISOString().split('T')[0];
+    const { data: todayUploads, error: countError } = await supabase
+      .from("documents")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("upload_date", today);
+
+    if (countError) {
+      console.error("Rate limit check error:", countError);
+    }
+
+    if (todayUploads && todayUploads.length >= MAX_UPLOADS_PER_DAY) {
+      return { 
+        message: `Daily upload limit reached (${MAX_UPLOADS_PER_DAY} per day). Please try again tomorrow.`, 
+        status: "error" 
+      };
+    }
+
+    // Check for duplicate filenames from same user in past 24 hours
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { data: duplicateCheck } = await supabase
+      .from("documents")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("name", file.name)
+      .gte("upload_date", yesterday);
+
+    if (duplicateCheck && duplicateCheck.length > 0) {
+      return { 
+        message: "A file with this name was uploaded recently. Consider renaming to avoid duplicates.", 
+        status: "warning" 
+      };
+    }
+
     // 1. Upload file to Supabase Storage
     const filePath = `${user.id}/${Date.now()}-${file.name}`;
-    const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, file);
+    const { error: uploadError } = await supabase.storage
+      .from("documents")
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false
+      });
 
     if (uploadError) {
       console.error("Storage Error:", uploadError);
@@ -53,14 +94,19 @@ export async function uploadDocument(prevState: any, formData: FormData) {
     }
 
     // 2. Insert record into the documents table
-    const { error: dbError } = await supabase.from("documents").insert({
-      user_id: user.id,
-      name: file.name,
-      type: file.type,
-      status: "Uploaded",
-      upload_date: new Date().toISOString().split('T')[0], // YYYY-MM-DD
-      storage_path: filePath,
-    });
+    const { error: dbError, data: insertedDoc } = await supabase
+      .from("documents")
+      .insert({
+        user_id: user.id,
+        name: file.name,
+        type: file.type,
+        size_bytes: file.size,
+        status: "Uploaded",
+        upload_date: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+        storage_path: filePath,
+      })
+      .select()
+      .single();
 
     if (dbError) {
       console.error("Database Error:", dbError);
@@ -72,9 +118,16 @@ export async function uploadDocument(prevState: any, formData: FormData) {
     // 3. Revalidate the dashboard path
     revalidatePath("/dashboard");
 
-    return { message: "Document uploaded successfully!", status: "success" };
+    return { 
+      message: "Document uploaded successfully!", 
+      status: "success",
+      documentId: insertedDoc?.id 
+    };
   } catch (e) {
     console.error("Unhandled Error:", e);
-    return { message: "An unexpected error occurred.", status: "error" };
+    return { 
+      message: e instanceof Error ? e.message : "An unexpected error occurred.", 
+      status: "error" 
+    };
   }
 }

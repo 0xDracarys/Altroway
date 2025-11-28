@@ -4,8 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export async function logout() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
+  try {
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+  // Always redirect to home after logout attempt
   redirect("/");
 }
 
@@ -82,18 +87,25 @@ export async function checkPermission(requiredRole: string) {
       return { hasPermission: false };
     }
 
-    // Define role hierarchy
-    const roleHierarchy = {
-      "job_seeker": 1,
-      "employer": 2,
-      "legal_advisor": 3,
-      "super_admin": 4
+    // Special case: super_admin can do everything
+    if (role === "super_admin") {
+      return { hasPermission: true };
+    }
+
+    // Define which roles can access which features
+    const rolePermissions: { [key: string]: string[] } = {
+      "job_seeker": ["job_seeker"], // Can only access job_seeker features
+      "employer": ["employer", "job_seeker"], // Can access employer and job_seeker features
+      "legal_advisor": ["legal_advisor", "job_seeker"], // Can access legal and job_seeker features
+      "super_admin": ["super_admin", "employer", "legal_advisor", "job_seeker"], // Can access all
     };
 
-    const userLevel = roleHierarchy[role as keyof typeof roleHierarchy] || 0;
-    const requiredLevel = roleHierarchy[requiredRole as keyof typeof roleHierarchy] || 0;
-
-    return { hasPermission: userLevel >= requiredLevel };
+    const userPermissions = rolePermissions[role] || [];
+    
+    // Check if user's role has permission to access required role's features
+    const hasPermission = userPermissions.includes(requiredRole);
+    
+    return { hasPermission };
   } catch (error) {
     console.error("checkPermission error:", error);
     return { hasPermission: false };

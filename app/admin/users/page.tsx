@@ -7,24 +7,33 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Users, ArrowLeft, Shield, Mail, Calendar, CheckCircle, XCircle, Edit, Trash2, UserPlus, Ban, Unlock } from "lucide-react";
 import Link from "next/link";
 import { UserManagementActions } from "./user-management-actions";
+import { AutoRefresh } from "../auto-refresh";
 
 export default async function AdminUsersPage() {
   const supabase = await createClient();
 
   // Check authentication
   const { data: { user } } = await supabase.auth.getUser();
+  
+  // DEBUG: Show what we're getting
+  console.log("DEBUG: User from auth:", user?.email || "NO USER");
+  
   if (!user) {
+    console.log("DEBUG: No user found, redirecting to login");
     redirect("/login");
   }
 
   // Check if user is super admin
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("role")
     .eq("user_id", user.id)
     .single();
 
+  console.log("DEBUG: Profile check:", profile?.role || "NO PROFILE", profileError?.message || "NO ERROR");
+
   if (profile?.role !== "super_admin") {
+    console.log("DEBUG: Not super admin, redirecting to dashboard");
     redirect("/dashboard");
   }
 
@@ -33,6 +42,8 @@ export default async function AdminUsersPage() {
     .from("profiles")
     .select("*")
     .order("created_at", { ascending: false });
+
+  console.log("DEBUG: Users query result:", users?.length || 0, "users", error?.message || "NO ERROR");
 
   if (error) {
     console.error("Error fetching users:", error);
@@ -48,16 +59,27 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AutoRefresh />
       <div className="container mx-auto px-4 py-8">
+        {/* Auto-refresh and cache busting */}
+        <div className="mb-4 p-2 bg-blue-100 text-blue-800 text-sm rounded">
+          🔄 Page refreshed at: {new Date().toLocaleString()} | Users: {totalUsers}
+          <button 
+            onClick={() => window.location.reload()} 
+            className="ml-2 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+          >
+            Refresh Now
+          </button>
+        </div>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/admin" className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
+            <Link href="/admin">
+              <Button variant="outline" size="sm">
+                <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Admin
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
           <p className="text-gray-600 mt-2">Manage user accounts, roles, and permissions</p>
@@ -104,7 +126,7 @@ export default async function AdminUsersPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-blue-600" />
+                <Users className="h-5 w-5 text-blue-500" />
                 <div>
                   <p className="text-2xl font-bold">{jobSeekers}</p>
                   <p className="text-sm text-gray-600">Job Seekers</p>
@@ -151,7 +173,7 @@ export default async function AdminUsersPage() {
                   <TableHead>User</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Company</TableHead>
+                  <TableHead>Headline</TableHead>
                   <TableHead>Joined</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -190,11 +212,13 @@ export default async function AdminUsersPage() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-gray-400" />
-                        {new Date(user.created_at).toLocaleDateString()}
+                        <span className="text-sm">
+                          {new Date(user.created_at).toLocaleDateString()}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <UserManagementActions user={user} />
+                      <UserManagementActions userId={user.user_id} />
                     </TableCell>
                   </TableRow>
                 ))}

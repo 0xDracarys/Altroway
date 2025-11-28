@@ -44,7 +44,17 @@ export default async function HomePage() {
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-24 overflow-hidden">
+        <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white py-24 overflow-hidden">
+          {/* Video Background */}
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/hero-video.mp4" type="video/mp4" />
+          </video>
+          
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-20">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30px_30px,rgba(255,255,255,0.1)_2px,transparent_2px)] bg-[length:60px_60px]"></div>
@@ -52,7 +62,7 @@ export default async function HomePage() {
           
           <div className="container mx-auto px-4 text-center relative z-10">
             <div className="max-w-5xl mx-auto">
-              <Badge variant="secondary" className="mb-6 text-blue-600 bg-white/90 px-4 py-2 text-sm font-medium">
+              <Badge variant="secondary" className="mb-6 text-slate-900 bg-gradient-to-r from-emerald-300 to-cyan-300 px-4 py-2 text-sm font-medium">
                 <Globe className="h-4 w-4 mr-2" />
                 Your Gateway to European Opportunities
               </Badge>
@@ -64,17 +74,11 @@ export default async function HomePage() {
                 Connect with top European employers, get expert legal guidance, and build your career across the continent with our comprehensive platform.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-                <Button size="lg" asChild className="text-lg px-10 py-6 bg-white text-blue-900 hover:bg-gray-100 shadow-lg transform hover:scale-105 transition-all">
-                  <Link href="/jobs">
-                    <Search className="h-6 w-6 mr-3" />
-                    Browse Jobs
-                  </Link>
-                </Button>
-                <Button size="lg" asChild className="text-lg px-10 py-6 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 shadow-lg transform hover:scale-105 transition-all">
+              <div className="flex justify-center mb-16">
+                <Button size="lg" asChild className="text-lg px-12 py-7 bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-900 hover:from-emerald-500 hover:to-cyan-500 shadow-2xl transform hover:scale-110 transition-all font-bold rounded-full">
                   <Link href="/register">
-                    <Users className="h-6 w-6 mr-3" />
-                    Join Now
+                    <ArrowRight className="h-6 w-6 mr-3" />
+                    Let's start your journey
                   </Link>
                 </Button>
               </div>
@@ -97,6 +101,47 @@ export default async function HomePage() {
                   <div className="text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">10+</div>
                   <div className="text-blue-100 font-medium">Legal Partners</div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Video Section - Second Video */}
+        <section className="relative bg-gray-900 text-white py-20 overflow-hidden">
+          {/* Second Video Background */}
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            className="absolute inset-0 w-full h-full object-cover opacity-60"
+          >
+            <source src="/features-video.mp4" type="video/mp4" />
+          </video>
+          
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-transparent to-indigo-900/80"></div>
+          
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-3xl">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                Experience the Power of Altroway
+              </h2>
+              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+                Watch how thousands of professionals are transforming their careers through our innovative platform. From job discovery to successful placement, we're with you every step of the way.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" asChild className="text-lg px-8 py-6 bg-emerald-500 hover:bg-emerald-600 text-white">
+                  <Link href="/jobs">
+                    <Search className="h-5 w-5 mr-2" />
+                    Explore Opportunities
+                  </Link>
+                </Button>
+                <Button size="lg" asChild variant="outline" className="text-lg px-8 py-6 text-white border-white hover:bg-white/10">
+                  <Link href="/about">
+                    <ArrowRight className="h-5 w-5 mr-2" />
+                    Learn More
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>

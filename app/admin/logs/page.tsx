@@ -27,19 +27,30 @@ export default async function AdminLogsPage() {
     redirect("/dashboard");
   }
 
-  // Fetch analytics events (activity logs)
-  const { data: events, error } = await supabase
-    .from("analytics_events")
-    .select(`
-      *,
-      profiles:user_id (
-        full_name,
-        username,
-        role
-      )
-    `)
-    .order("created_at", { ascending: false })
-    .limit(100);
+          // Fetch analytics events (activity logs) - handle missing table gracefully
+        let events = null;
+        let error = null;
+        
+        try {
+          const result = await supabase
+            .from("analytics_events")
+            .select(`
+              *,
+              profiles:user_id (
+                full_name,
+                username,
+                role
+              )
+            `)
+            .order("created_at", { ascending: false })
+            .limit(100);
+          
+          events = result.data;
+          error = result.error;
+        } catch (err) {
+          console.log("Analytics table not available:", err);
+          events = [];
+        }
 
   if (error) {
     console.error("Error fetching logs:", error);
@@ -143,7 +154,7 @@ export default async function AdminLogsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {events?.map((event) => (
+                {events && events.length > 0 ? events.map((event) => (
                   <TableRow key={event.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -210,7 +221,17 @@ export default async function AdminLogsPage() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                )) : (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8">
+                      <div className="flex flex-col items-center gap-2">
+                        <Activity className="h-12 w-12 text-gray-400" />
+                        <p className="text-gray-500">No activity logs available</p>
+                        <p className="text-sm text-gray-400">Analytics tracking is not set up yet</p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
             

@@ -16,20 +16,14 @@ export async function createClient() {
           try {
             cookieStore.set({ name, value, ...options })
           } catch (error) {
-            // The `set` method was called from a Server Component.
-            // This can be ignored if you have a Middleware that manages
-            // Supabase session cookies.
-            console.warn("Could not set cookie from Server Component:", error)
+            // Silently ignore - handled in middleware
           }
         },
         remove(name: string, options: any) {
           try {
             cookieStore.set({ name, value: "", ...options })
           } catch (error) {
-            // The `remove` method was called from a Server Component.
-            // This can be ignored if you have a Middleware that manages
-            // Supabase session cookies.
-            console.warn("Could not remove cookie from Server Component:", error)
+            // Silently ignore - handled in middleware  
           }
         },
       },

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     
     // Check if user is authenticated
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -75,8 +75,8 @@ export async function GET(request: NextRequest) {
     }, {} as Record<string, number>);
     
     const topLocations = Object.entries(locationCounts)
-      .map(([location, count]) => ({ location, count }))
-      .sort((a, b) => b.count - a.count)
+      .map(([location, count]) => ({ location, count: count as number }))
+      .sort((a, b) => (b.count as number) - (a.count as number))
       .slice(0, 10);
 
     // Mock data for charts (in real app, this would come from time-series data)

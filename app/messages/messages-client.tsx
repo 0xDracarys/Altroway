@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageSquare, Clock, Eye, Briefcase, Send, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 interface Message {
   id: string;
@@ -136,7 +137,8 @@ export function MessagesClient({
   };
 
   return (
-    <div className="space-y-4">
+    <ErrorBoundary section="Messaging">
+      <div className="space-y-4">
       {conversations.map((conversation) => {
         const lastMessage = getLastMessage(conversation.messages);
         const unreadCount = getUnreadCount(conversation.messages, currentUserId);
@@ -279,6 +281,7 @@ export function MessagesClient({
           </Card>
         );
       })}
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }
